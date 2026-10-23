@@ -57,7 +57,7 @@ footer{max-width:1100px;margin:0 auto;padding:2rem 1.5rem 3rem;border-top:1px so
   <section id="about">
     <h2>About</h2>
     <div>
-      <p>I’ve just finished an MSc in Statistics with Data Science at Warwick, and I’m now exploring AI safety. I’m especially interested in how we can understand what’s going on inside AI models through mechanistic interpretability, and in how we can tell whether models are really doing what we think they’re doing.</p>
+      <p>I’ve just finished an MSc in Statistics with Data Science at Warwick, and I’m now exploring AI safety. I’m especially interested in how we can understand what’s going on inside AI models through mechanistic interpretability, and in using evals to test whether models are really doing what we think they’re doing, including whether they might be scheming.</p>
       <p>Before that, I spent two years as a quantitative analyst in gas pricing at SEFE.</p>
     </div>
   </section>
@@ -68,8 +68,8 @@ footer{max-width:1100px;margin:0 auto;padding:2rem 1.5rem 3rem;border-top:1px so
       <article>
         <h3>A Practical Block-Sampling Particle Filter</h3>
         <p class="meta">Warwick MSc dissertation, 2026. Supervised by Prof. Adam Johansen.</p>
-        <p>I extended block-sampling particle filters beyond linear Gaussian models by training a conditional VAE offline to act as the proposal, so each online step costs a single forward pass. In a linear Gaussian model, resampling fell from about 113 to about 20 steps per 500-step run as block length grew from 1 to 6.</p>
-        <p>I also showed that the ELBO does not control importance-weight variance, so I validated proposals through filter diagnostics rather than the training loss.</p>
+        <p>Particle filters track a hidden state through noisy data, but each resampling step thins out their memory of the past. Block sampling fixes this by revising earlier states with later observations, yet it only has a closed form for linear Gaussian models. I trained a conditional VAE to learn it offline, so each online step takes a single forward pass.</p>
+        <p>On simulated data and real USD/GBP returns, it reduced the variance of the likelihood estimates and beat an independently trained network, though the gains were modest on harder models. A useful lesson: the VAE’s training loss doesn’t control the filter’s weight variance, so I checked proposals with filter diagnostics instead.</p>
       </article>
       <article>
         <h3>AI Safety Fellowship, Technical Track</h3>
@@ -132,15 +132,14 @@ footer{max-width:1100px;margin:0 auto;padding:2rem 1.5rem 3rem;border-top:1px so
 (()=>{
 const hero=document.querySelector('.hero'),c=document.getElementById('pf'),x=c.getContext('2d');
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-const N=220,SP=9,SO=42;
-let W=0,H=0,P=[],w=[],T={x:0,y:0},E={x:0,y:0},ptr=null,last=-1e9,t0=performance.now(),vis=true;
+const N=220,SP=9,SO=42,NO=40,NE=80;
+let W=0,H=0,P=[],w=[],T={x:0,y:0},E={x:0,y:0},obs=[],est=[],ptr=null,last=-1e9,t0=performance.now(),vis=true;
 const g=()=>{let u=0;while(!u)u=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*Math.random())};
 const path=s=>({x:W*(.58+.3*Math.sin(.45*s)),y:H*(.36+.2*Math.sin(.7*s+1))});
 function fit(){
   const d=Math.min(devicePixelRatio||1,2),r=c.getBoundingClientRect();
   W=r.width;H=r.height;c.width=W*d;c.height=H*d;x.setTransform(d,0,0,d,0,0);
-  x.fillStyle='#060b16';x.fillRect(0,0,W,H);
-  const p=path(0);T={x:p.x,y:p.y};E={x:p.x,y:p.y};
+  const p=path(0);T={x:p.x,y:p.y};E={x:p.x,y:p.y};obs=[];est=[];
   P=Array.from({length:N},()=>({x:p.x+g()*60,y:p.y+g()*60}));w=new Array(N).fill(1/N);
 }
 function resample(){
@@ -161,18 +160,30 @@ function step(now){
   let ess=0,ex=0,ey=0;
   for(let i=0;i<N;i++){w[i]/=sum;ess+=w[i]*w[i];ex+=w[i]*P[i].x;ey+=w[i]*P[i].y}
   E.x=ex;E.y=ey;
-  x.fillStyle='rgba(6,11,22,.16)';x.fillRect(0,0,W,H);
+  obs.push([ox,oy]);if(obs.length>NO)obs.shift();
+  est.push([ex,ey]);if(est.length>NE)est.shift();
+  if(1/ess<N/2)resample();
+}
+function draw(){
+  x.clearRect(0,0,W,H);
+  for(let i=0;i<obs.length;i++){
+    const a=(i+1)/obs.length;
+    x.fillStyle='rgba(232,237,245,'+(.45*a*a)+')';x.fillRect(obs[i][0]-1,obs[i][1]-1,2,2);
+  }
+  x.lineWidth=1.5;x.lineCap='round';
+  for(let i=1;i<est.length;i++){
+    x.strokeStyle='rgba(255,181,71,'+(.55*i/est.length)+')';
+    x.beginPath();x.moveTo(est[i-1][0],est[i-1][1]);x.lineTo(est[i][0],est[i][1]);x.stroke();
+  }
   for(let i=0;i<N;i++){
     x.fillStyle='rgba(91,140,255,'+Math.min(1,.18+w[i]*N*.5)+')';
     x.beginPath();x.arc(P[i].x,P[i].y,1.6,0,6.283);x.fill();
   }
-  x.fillStyle='rgba(232,237,245,.55)';x.fillRect(ox-1,oy-1,2,2);
   x.strokeStyle='rgba(232,237,245,.8)';x.lineWidth=1;x.beginPath();x.arc(T.x,T.y,9,0,6.283);x.stroke();
   x.fillStyle='#ffb547';x.beginPath();x.arc(E.x,E.y,3.2,0,6.283);x.fill();
-  if(1/ess<N/2)resample();
 }
-function warm(){fit();for(let k=0;k<90;k++)step(t0+k*16)}
-function loop(now){if(vis)step(now);requestAnimationFrame(loop)}
+function warm(){fit();for(let k=0;k<90;k++)step(t0+k*16);draw()}
+function loop(now){if(vis){step(now);draw()}requestAnimationFrame(loop)}
 hero.addEventListener('pointermove',e=>{
   const r=c.getBoundingClientRect();
   ptr={x:e.clientX-r.left,y:e.clientY-r.top};last=performance.now();
