@@ -25,7 +25,7 @@ h1,h2,h3{font-family:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;
 .hero-text{position:relative;z-index:1}
 .hero h1{font-size:clamp(3.2rem,11vw,9rem);font-weight:700;letter-spacing:-.03em}
 .sub{margin:1rem 0 0;font-size:clamp(1.15rem,2.2vw,1.6rem);color:var(--muted)}
-.note{margin:2rem 0 0;max-width:44ch;font-size:.9rem;color:var(--muted)}
+.note{margin:2rem 0 0;max-width:54ch;font-size:.9rem;color:var(--muted)}
 main section{display:grid;grid-template-columns:minmax(150px,1fr) 3fr;gap:2rem;max-width:1100px;margin:0 auto;padding:5rem 1.5rem;border-top:1px solid var(--line)}
 main section>h2{font-size:1.7rem;font-weight:500;position:sticky;top:2rem;align-self:start}
 article+article{margin-top:2.25rem}
@@ -49,7 +49,7 @@ footer{max-width:1100px;margin:0 auto;padding:2rem 1.5rem 3rem;border-top:1px so
   <div class="hero-text">
     <h1>Calum Smith</h1>
     <p class="sub">Statistician exploring AI safety.</p>
-    <p class="note">A particle filter in miniature. Move your cursor: the white ring is the hidden position, the specks are noisy readings of it, and the amber dot is the filter’s estimate.</p>
+    <p class="note">A particle filter in miniature. Move your cursor: the white ring is the hidden position and the small white dots are noisy readings of it. The blue dots are the filter’s guesses, and the amber dot and line are its estimate and recent path.</p>
   </div>
 </header>
 
@@ -132,8 +132,8 @@ footer{max-width:1100px;margin:0 auto;padding:2rem 1.5rem 3rem;border-top:1px so
 (()=>{
 const hero=document.querySelector('.hero'),c=document.getElementById('pf'),x=c.getContext('2d');
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-const N=220,SP=9,SO=42,NO=40,NE=80;
-let W=0,H=0,P=[],w=[],T={x:0,y:0},E={x:0,y:0},obs=[],est=[],ptr=null,last=-1e9,t0=performance.now(),vis=true;
+const N=160,SP=9,SO=42,NO=8,NE=50;
+let fr=0,W=0,H=0,P=[],w=[],T={x:0,y:0},E={x:0,y:0},obs=[],est=[],ptr=null,last=-1e9,t0=performance.now(),vis=true;
 const g=()=>{let u=0;while(!u)u=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*Math.random())};
 const path=s=>({x:W*(.58+.3*Math.sin(.45*s)),y:H*(.36+.2*Math.sin(.7*s+1))});
 function fit(){
@@ -160,7 +160,7 @@ function step(now){
   let ess=0,ex=0,ey=0;
   for(let i=0;i<N;i++){w[i]/=sum;ess+=w[i]*w[i];ex+=w[i]*P[i].x;ey+=w[i]*P[i].y}
   E.x=ex;E.y=ey;
-  obs.push([ox,oy]);if(obs.length>NO)obs.shift();
+  if(++fr%5===0){obs.push([ox,oy]);if(obs.length>NO)obs.shift();}
   est.push([ex,ey]);if(est.length>NE)est.shift();
   if(1/ess<N/2)resample();
 }
@@ -168,7 +168,7 @@ function draw(){
   x.clearRect(0,0,W,H);
   for(let i=0;i<obs.length;i++){
     const a=(i+1)/obs.length;
-    x.fillStyle='rgba(232,237,245,'+(.45*a*a)+')';x.fillRect(obs[i][0]-1,obs[i][1]-1,2,2);
+    x.fillStyle='rgba(232,237,245,'+(.8*a)+')';x.beginPath();x.arc(obs[i][0],obs[i][1],1+1.2*a,0,6.283);x.fill();
   }
   x.lineWidth=1.5;x.lineCap='round';
   for(let i=1;i<est.length;i++){
@@ -176,7 +176,7 @@ function draw(){
     x.beginPath();x.moveTo(est[i-1][0],est[i-1][1]);x.lineTo(est[i][0],est[i][1]);x.stroke();
   }
   for(let i=0;i<N;i++){
-    x.fillStyle='rgba(91,140,255,'+Math.min(1,.18+w[i]*N*.5)+')';
+    x.fillStyle='rgba(91,140,255,'+Math.min(1,.12+w[i]*N*.4)+')';
     x.beginPath();x.arc(P[i].x,P[i].y,1.6,0,6.283);x.fill();
   }
   x.strokeStyle='rgba(232,237,245,.8)';x.lineWidth=1;x.beginPath();x.arc(T.x,T.y,9,0,6.283);x.stroke();
