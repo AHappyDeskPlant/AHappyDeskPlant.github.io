@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calum Smith</title>
+<meta name="description" content="Calum Smith: statistics, probabilistic models and AI safety.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060b16;--text:#e8edf5;--muted:#8e9bb3;--line:#1b2740;--blue:#5b8cff;--amber:#ffb547;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--text);font:400 1.0625rem/1.65 "IBM Plex Sans",system-ui,sans-serif}
+a{color:inherit}
+a:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+h1,h2,h3{font-family:"Bricolage Grotesque","IBM Plex Sans",system-ui,sans-serif;margin:0;line-height:1.05}
+.hero{position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 clamp(1.25rem,4vw,3rem) clamp(2.5rem,6vh,4rem);overflow:hidden}
+#pf{position:absolute;inset:0;width:100%;height:100%;display:block}
+.top{position:absolute;top:0;left:0;right:0;z-index:2;display:flex;justify-content:flex-end;gap:1.75rem;padding:1.5rem clamp(1.25rem,4vw,3rem);font-size:.95rem}
+.top a{color:var(--muted);text-decoration:none}
+.top a:hover{color:var(--text)}
+.hero-text{position:relative;z-index:1}
+.hero h1{font-size:clamp(3.2rem,11vw,9rem);font-weight:700;letter-spacing:-.03em}
+.sub{margin:1rem 0 0;font-size:clamp(1.15rem,2.2vw,1.6rem);color:var(--muted)}
+.note{margin:2rem 0 0;max-width:44ch;font-size:.9rem;color:var(--muted)}
+main section{display:grid;grid-template-columns:minmax(150px,1fr) 3fr;gap:2rem;max-width:1100px;margin:0 auto;padding:5rem 1.5rem;border-top:1px solid var(--line)}
+main section>h2{font-size:1.7rem;font-weight:500;position:sticky;top:2rem;align-self:start}
+article+article{margin-top:2.25rem}
+h3{font-size:1.3rem;font-weight:500}
+.meta{margin:.35rem 0 .6rem;font-size:.95rem;color:var(--muted)}
+p{margin:0 0 1rem;max-width:62ch}
+.links{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.5rem}
+.btn{display:inline-block;padding:.65rem 1.3rem;border:1px solid var(--line);border-radius:999px;text-decoration:none;transition:border-color .2s}
+.btn:hover{border-color:var(--amber)}
+.btn.main{background:var(--amber);border-color:var(--amber);color:#060b16;font-weight:500}
+footer{max-width:1100px;margin:0 auto;padding:2rem 1.5rem 3rem;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem}
+@media(max-width:760px){main section{grid-template-columns:1fr;padding:3.5rem 1.25rem}main section>h2{position:static}.top{gap:1.1rem}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <canvas id="pf" aria-hidden="true"></canvas>
+  <nav class="top" aria-label="Sections">
+    <a href="#research">Research</a><a href="#experience">Experience</a><a href="#education">Education</a><a href="#contact">Contact</a>
+  </nav>
+  <div class="hero-text">
+    <h1>Calum Smith</h1>
+    <p class="sub">Statistician exploring AI safety.</p>
+    <p class="note">A particle filter in miniature. Move your cursor: the white ring is the hidden position, the specks are noisy readings of it, and the amber dot is the filter’s estimate.</p>
+  </div>
+</header>
+
+<main>
+  <section id="about">
+    <h2>About</h2>
+    <div>
+      <p>I’ve just finished an MSc in Statistics with Data Science at Warwick, and I’m now exploring AI safety. I’m especially interested in how we can understand what’s going on inside AI models through mechanistic interpretability, and in how we can tell whether models are really doing what we think they’re doing.</p>
+      <p>Before that, I spent two years as a quantitative analyst in gas pricing at SEFE.</p>
+    </div>
+  </section>
+
+  <section id="research">
+    <h2>Research</h2>
+    <div>
+      <article>
+        <h3>A Practical Block-Sampling Particle Filter</h3>
+        <p class="meta">Warwick MSc dissertation, 2026. Supervised by Prof. Adam Johansen.</p>
+        <p>I extended block-sampling particle filters beyond linear Gaussian models by training a conditional VAE offline to act as the proposal, so each online step costs a single forward pass. In a linear Gaussian model, resampling fell from about 113 to about 20 steps per 500-step run as block length grew from 1 to 6.</p>
+        <p>I also showed that the ELBO does not control importance-weight variance, so I validated proposals through filter diagnostics rather than the training loss.</p>
+      </article>
+      <article>
+        <h3>AI Safety Fellowship, Technical Track</h3>
+        <p class="meta">Warwick EA &amp; AI Societies, autumn 2025.</p>
+        <p>I presented on variational autoencoders, the model class at the centre of my dissertation.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="experience">
+    <h2>Experience</h2>
+    <div>
+      <article>
+        <h3>Quantitative Analyst, Gas Pricing</h3>
+        <p class="meta">SEFE, July 2022 to December 2023.</p>
+        <p>I produced and quality-controlled the daily forward gas curves (NBP, TTF) that served as the primary pricing reference for B2B supply contracts in the UK and Netherlands, and maintained the pricing framework behind them.</p>
+      </article>
+      <article>
+        <h3>Flexible Portfolio Analyst</h3>
+        <p class="meta">SEFE, May 2021 to July 2022.</p>
+        <p>I reconciled the data supporting £100m+ of monthly billing on a flexible gas portfolio.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="education">
+    <h2>Education</h2>
+    <div>
+      <article>
+        <h3>University of Warwick</h3>
+        <p class="meta">MSc Statistics with Data Science, 2025 to 2026.</p>
+      </article>
+      <article>
+        <h3>Durham University</h3>
+        <p class="meta">MSc Finance, 2019 to 2020.</p>
+      </article>
+      <article>
+        <h3>University of Manchester</h3>
+        <p class="meta">BSc (Hons) Mathematics, 2015 to 2018.</p>
+      </article>
+      <p style="margin-top:2.25rem">Python (NumPy, Pandas, scikit-learn, PyTorch), R, Git and LaTeX. Monte Carlo and MCMC, Bayesian inference, state-space models and VAEs.</p>
+    </div>
+  </section>
+
+  <section id="contact">
+    <h2>Contact</h2>
+    <div>
+      <p>The quickest way to reach me is on LinkedIn. My code is on GitHub.</p>
+      <div class="links">
+        <a class="btn main" href="https://www.linkedin.com/in/calumwillsmith/">LinkedIn</a>
+        <a class="btn" href="https://github.com/AHappyDeskPlant">GitHub</a>
+        <a class="btn" href="Calum_Smith_CV.pdf">Download CV</a>
+      </div>
+    </div>
+  </section>
+</main>
+<footer>© 2026 Calum Smith</footer>
+
+<script>
+(()=>{
+const hero=document.querySelector('.hero'),c=document.getElementById('pf'),x=c.getContext('2d');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const N=220,SP=9,SO=42;
+let W=0,H=0,P=[],w=[],T={x:0,y:0},E={x:0,y:0},ptr=null,last=-1e9,t0=performance.now(),vis=true;
+const g=()=>{let u=0;while(!u)u=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*Math.random())};
+const path=s=>({x:W*(.58+.3*Math.sin(.45*s)),y:H*(.36+.2*Math.sin(.7*s+1))});
+function fit(){
+  const d=Math.min(devicePixelRatio||1,2),r=c.getBoundingClientRect();
+  W=r.width;H=r.height;c.width=W*d;c.height=H*d;x.setTransform(d,0,0,d,0,0);
+  x.fillStyle='#060b16';x.fillRect(0,0,W,H);
+  const p=path(0);T={x:p.x,y:p.y};E={x:p.x,y:p.y};
+  P=Array.from({length:N},()=>({x:p.x+g()*60,y:p.y+g()*60}));w=new Array(N).fill(1/N);
+}
+function resample(){
+  const o=[];let cum=w[0],i=0;const u=Math.random()/N;
+  for(let j=0;j<N;j++){const t=u+j/N;while(t>cum&&i<N-1){i++;cum+=w[i]}o.push({x:P[i].x,y:P[i].y})}
+  P=o;w.fill(1/N);
+}
+function step(now){
+  const p=path((now-t0)/1000),goal=(ptr&&now-last<3000)?ptr:p;
+  T.x+=(goal.x-T.x)*.12;T.y+=(goal.y-T.y)*.12;
+  const ox=T.x+g()*SO,oy=T.y+g()*SO;
+  let sum=0;
+  for(let i=0;i<N;i++){
+    const q=P[i];q.x+=g()*SP;q.y+=g()*SP;
+    const dx=q.x-ox,dy=q.y-oy;
+    w[i]=w[i]*Math.exp(-(dx*dx+dy*dy)/(2*SO*SO))+1e-300;sum+=w[i];
+  }
+  let ess=0,ex=0,ey=0;
+  for(let i=0;i<N;i++){w[i]/=sum;ess+=w[i]*w[i];ex+=w[i]*P[i].x;ey+=w[i]*P[i].y}
+  E.x=ex;E.y=ey;
+  x.fillStyle='rgba(6,11,22,.16)';x.fillRect(0,0,W,H);
+  for(let i=0;i<N;i++){
+    x.fillStyle='rgba(91,140,255,'+Math.min(1,.18+w[i]*N*.5)+')';
+    x.beginPath();x.arc(P[i].x,P[i].y,1.6,0,6.283);x.fill();
+  }
+  x.fillStyle='rgba(232,237,245,.55)';x.fillRect(ox-1,oy-1,2,2);
+  x.strokeStyle='rgba(232,237,245,.8)';x.lineWidth=1;x.beginPath();x.arc(T.x,T.y,9,0,6.283);x.stroke();
+  x.fillStyle='#ffb547';x.beginPath();x.arc(E.x,E.y,3.2,0,6.283);x.fill();
+  if(1/ess<N/2)resample();
+}
+function warm(){fit();for(let k=0;k<90;k++)step(t0+k*16)}
+function loop(now){if(vis)step(now);requestAnimationFrame(loop)}
+hero.addEventListener('pointermove',e=>{
+  const r=c.getBoundingClientRect();
+  ptr={x:e.clientX-r.left,y:e.clientY-r.top};last=performance.now();
+});
+new IntersectionObserver(es=>{vis=es[0].isIntersecting}).observe(hero);
+addEventListener('resize',()=>{fit();if(reduce)warm()});
+if(reduce){warm()}else{fit();requestAnimationFrame(loop)}
+})();
+</script>
+</body>
+</html>
